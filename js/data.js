@@ -4,13 +4,13 @@
 			none:"none",
 			good:"good",
 			bad:"bad",
-			marlin:"marlin",
+			merlin:"merlin",
 			assassin:"assassin",
 			percival:"percival",
 			mordrid:"mordrid"
 		}
 		
-		var GoodSideRoles = [PlayerRoles.good, PlayerRoles.marlin, PlayerRoles.percival];
+		var GoodSideRoles = [PlayerRoles.good, PlayerRoles.merlin, PlayerRoles.percival];
 		var BadSideRoles = [PlayerRoles.bad, PlayerRoles.assassin, PlayerRoles.mordrid];
 		
 		var Player = function(id_, name_)
@@ -102,6 +102,11 @@
 					message = "Not enough good players";
 				}
 				else if(self.countRoles(BadSideRoles) < 2)
+				{
+					ok = false;
+					message = "Not enough bad players";
+				}
+				else if(self.countRoles([]) < 2)
 				{
 					ok = false;
 					message = "Not enough bad players";
