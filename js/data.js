@@ -124,18 +124,49 @@
 				{
 					self.missions.push(new GameMission(index, wasSuccess, players));
 				}
-				this.events.trigger(self.MISSION_CHANGED, [index, wasSuccess, players]);
+				this.events.trigger(self.MISSION_CHANGED, [index, mission]);
 				this.events.trigger(self.CHANGED, self.MISSION_CHANGED);
 			}
 			
+			this.removeMission = function(index)
+			{
+				var mission = self.getMission(index);
+				if(mission) 
+				{
+					var index = self.missions.indexOf(mission);
+					self.missions.splice(index, 1);
+				}
+				this.events.trigger(self.MISSION_CHANGED, [index, null]);
+				this.events.trigger(self.CHANGED, self.MISSION_CHANGED);
+			}
+			
+			this.toggleMission = function (index, success)
+			{
+				var mission = self.getMission(index);
+				if(mission && mission.success == success)
+				{
+					self.removeMission(index);
+				}
+				else
+				{
+					self.setMission(index, success);
+				}
+			}
+			
+			var addedAll;
 			this.addToNextEmptyMission = function(wasSuccess)
 			{
+				if(addedAll) return;
 				for(var i = 0; i < MaxNumberOfMissions; i++)
 				{
 					var mission = self.getMission(i);
 					if(mission == null)
 					{
 						self.setMission(i, wasSuccess);
+						if(self.missions.length >= MaxNumberOfMissions)
+						{
+							addedAll = true;
+						}
 						break;
 					}
 				}

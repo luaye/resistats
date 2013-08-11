@@ -185,11 +185,11 @@ body { padding-top: 60px; }
 			{
 				successRow.find(".submitSuccess" + i).change({index:i}, function(e)
 				{
-					game.setMission(e.data.index, true);
+					game.toggleMission(e.data.index, true);
 				});
 				failRow.find(".submitFail" + i).change({index:i}, function(e)
 				{
-					game.setMission(e.data.index, false);
+					game.toggleMission(e.data.index, false);
 				});
 				
 			}
