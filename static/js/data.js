@@ -7,12 +7,14 @@
 			merlin:"merlin",
 			assassin:"assassin",
 			percival:"percival",
-			mordrid:"mordrid"
+			mordrid:"mordrid",
+			morgana:"morgana",
+			oberon:"oberon"
 		}
 		
 		var GoodSideRoles = [PlayerRoles.good, PlayerRoles.merlin, PlayerRoles.percival];
-		var EvilSideRoles = [PlayerRoles.evil, PlayerRoles.assassin, PlayerRoles.mordrid];
-		var SpecialCharacterRoles = [PlayerRoles.merlin, PlayerRoles.percival, PlayerRoles.assassin, PlayerRoles.mordrid];
+		var EvilSideRoles = [PlayerRoles.evil, PlayerRoles.assassin, PlayerRoles.mordrid, PlayerRoles.oberon, PlayerRoles.morgana];
+		var SpecialCharacterRoles = [PlayerRoles.merlin, PlayerRoles.percival, PlayerRoles.assassin, PlayerRoles.mordrid, PlayerRoles.oberon, PlayerRoles.morgana];
 		
 		var MaxNumberOfMissions = 5;
 		
@@ -197,7 +199,7 @@
 			this.getStatus = function()
 			{
 				var ok = true;
-				var message = "Ready to submit";
+				var message = "";
 				if(self.players.length < 5)
 				{
 					ok = false;
@@ -213,10 +215,37 @@
 					ok = false;
 					message = "Not enough evil players";
 				}
-				else if(self.countMission(true) < 3 && self.countMission(false) < 3)
+				
+				if(ok)
 				{
-					ok = false;
-					message = "Not enough missions.";
+					var successes = self.countMission(true);
+					var fails = self.countMission(false);
+				
+					if(successes < 3 && fails < 3)
+					{
+						ok = false;
+						message = "Not enough missions.";
+					}
+					else if(successes > 3)
+					{
+						ok = false;
+						message = "Too many successful missions.";
+					}
+					else if(fails > 3)
+					{
+						ok = false;
+						message = "Too many failed missions.";
+					}
+					else if(successes < 3 && self.goodWon)
+					{
+						ok = false;
+						message = "Not enough successful missions for good to win.";
+					}
+					else if(successes >= 3 && !self.goodWon && self.countRoles(PlayerRoles.merlin) < 1)
+					{
+						ok = false;
+						message = "Not enough failed missions for evil to win without  Merlin assassination.";
+					}
 				}
 				
 				if(ok)
@@ -232,6 +261,26 @@
 					}
 				}
 				
+				if(ok)
+				{
+					message = self.players.length + " players. ";
+					message += self.missions.length + " missions.\n";
+					if(self.goodWon)
+					{
+						message += "Good side won!";
+					}
+					else
+					{
+						 if(self.countMission(true) >= 3 && self.countRoles(PlayerRoles.merlin) >= 1)
+						 {
+							 message += "Evil won by assassinating Merlin!";
+						 }
+						 else
+						 {
+							 message += "Evil side won!";
+						 }
+					}
+				}
 				
 				return {ok:ok, message:message};
 			}

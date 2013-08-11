@@ -20,7 +20,7 @@
 		function createPlayerSlot(player, game)
 		{
 			var copy = playerSlotTemplate.clone();
-			if(player) setupPlayerSlot(copy, player, game, true);
+			if(player) setupPlayerSlot(copy, player, game, true);4
 			return copy;
 		}
 		
@@ -93,6 +93,8 @@
 						btnclass = "btn-info";
 					break;
 					case PlayerRoles.assassin:
+					case PlayerRoles.oberon:
+					case PlayerRoles.morgana:
 						btnclass = "btn-warning";
 					break;
 					case PlayerRoles.mordrid:
@@ -244,6 +246,8 @@
 			row.find(".gameWinner").text(game.goodWon ? "good" : "evil");
 			
 			
+			row.attr("data-original-title", game.getStatus().message);
+			row.tooltip();
 			
 			gameRows.append(row);
 			return row;
