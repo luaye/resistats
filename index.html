@@ -7,6 +7,7 @@
     
     <script src="http://code.jquery.com/jquery.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/data.js"></script>
     
     <style>
 body { padding-top: 60px; }
@@ -20,25 +21,15 @@ body { padding-top: 60px; }
     
     
     <script type="application/javascript">
-	
-		var PlayerRoles = {
-			none:"none",
-			good:"good",
-			bad:"bad",
-			marlin:"marlin",
-			assassin:"assassin",
-			percival:"percival",
-			mordrid:"mordrid"
-		}
 		
 		var players = [
-			{id:"1", name:"Lu Aye Oo"},
-			{id:"2", name:"Heather"},
-			{id:"3", name:"Kg"},
-			{id:"4", name:"Min Ko"},
-			{id:"5", name:"Nanda"},
-			{id:"6", name:"Vicki"},
-			{id:"7", name:"Jack"}
+			new Player("", "Lu Aye Oo"),
+			new Player("", "Heather"),
+			new Player("", "Kg"),
+			new Player("", "Min Ko"),
+			new Player("", "Nanda"),
+			new Player("", "Vicki"),
+			new Player("", "Jack")
 		];
 		
 	
@@ -46,34 +37,70 @@ body { padding-top: 60px; }
 		
 		function onLoad()
 		{
-			$("#submitModal").modal('show');
 			playerSlotTemplate = $("#playerSlot");
 			playerSlotTemplate.hide();
-			
-			for(var X in players)
-			{
-				var copy = createPlayerSlot(players[X], PlayerRoles.assassin, function()
-				{
-					
-				});	
-				copy.appendTo( "body" );
-			}
 		}
 		
-		function createPlayerSlot(player, role, editCallback)
+		function createPlayerSlot(player, game)
 		{
 			var copy = playerSlotTemplate.clone();
 			copy.show();
-			if(player) setupPlayerSlot(copy, player, role, editCallback);
+			if(player) setupPlayerSlot(copy, player, game, true);
 			return copy;
 		}
 		
-		function setupPlayerSlot(slot, player, role, editCallback)
+		function setupPlayerSlot(slot, player, game, autoupdate)
 		{
 			slot.find(".playerName").text(player.name);
-			var roleSpan = slot.find(".playerRole");
-			var btnclass = "btn-default";
+			
+			var role = game ? game.getPlayerRole(player) : PlayerRoles.none;
+			updatePlayerSlotRole(slot, role);
+			
+			var dropdown = slot.find(".playerDropDown");
+			if(game && game.editable)
+			{
+				dropdown.html("");
+				for(var prop in PlayerRoles)
+				{
+					var role = PlayerRoles[prop];
+					var li = $( '<li><a href="#">'+role+'</a></li>' );
+					li.bind("click", { player: player, role: role }, function(e)
+					{
+						game.setPlayerRole(player, e.data.role);
+					});
+					dropdown.append(li);
+				}
+				
+			}
+			else
+			{
+				slot.find(".playerDropDown").remove();
+			}
+			
+			if(autoupdate && game)
+			{
+				game.events.on(game.ROLE_CHANGED, function(e, p, r)
+				{
+					if(player == p)
+					{
+						updatePlayerSlotRole(slot, r);
+					}
+				});
+			}
+		}
+		
+		function updatePlayerSlotRole(slot, role)
+		{
 			var btn = slot.find(".playerButton");
+			
+			btn.removeClass("btn-primary");
+			btn.removeClass("btn-warning");
+			btn.removeClass("btn-success");
+			btn.removeClass("btn-info");
+			btn.removeClass("btn-danger");
+			
+			var btnclass = "btn-default";
+			var roleSpan = slot.find(".playerRole");
 			if(role && role != PlayerRoles.none)
 			{
 				switch(role)
@@ -101,31 +128,43 @@ body { padding-top: 60px; }
 				roleSpan.text(role);
 				roleSpan.show();
 			}
-			else roleSpan.hide();
+			else roleSpan.hide();	
+		}
+		
+		
+		
+		function showSubmitDialog()
+		{
+			var game = new Game();
 			
-			var dropdown = slot.find(".playerDropDown");
-			if(editCallback != null)
+			var modal = $("#submitModal");
+			var playersList = modal.find(".playersList");
+			playersList.html("");
+			for(var X in players)
 			{
-				dropdown.html("");
-				for(var prop in PlayerRoles)
-				{
-					var role = PlayerRoles[prop];
-					var li = $( '<li><a href="#">'+role+'</a></li>' );
-					li.bind("click", { player: player, role: role }, function(e)
-					{
-						var d = e.data;
-						btn.removeClass(btnclass);
-						setupPlayerSlot(slot, d.player, d.role, editCallback);
-						editCallback(e.player, e.role);
-					});
-					dropdown.append(li);
-				}
-				
+				var slot = createPlayerSlot(players[X], game);
+				var li = $("<li></li>");
+				li.append(slot);
+				playersList.append(li);
 			}
-			else
+			var updateStatus = function()
 			{
-				slot.find(".playerDropDown").remove();
+				var status = game.getStatus();
+				var box = modal.find(".submitStatusText");
+				box.removeClass("alert-danger");
+				box.removeClass("alert-info");
+				if(status.ok == true) box.addClass("alert-info");
+				else box.addClass("alert-danger");
+				box.text(status.message);
 			}
+			
+			game.events.bind(game.CHANGED, function (e)
+			{
+				updateStatus();
+			});
+			updateStatus();
+			
+			modal.modal('show');
 		}
 		
     </script>
@@ -148,7 +187,7 @@ body { padding-top: 60px; }
           <a href="#">Games</a>
         </li>
       </ul>
-    <a data-toggle="modal" href="#submitModal" class="btn btn-primary navbar-btn pull-right"href="#submitModal" >Submit</a>
+    <a class="btn btn-primary navbar-btn pull-right" href="javascript:showSubmitDialog();" >Submit</a>
     </div>
   </div>
 </div>
@@ -175,53 +214,8 @@ body { padding-top: 60px; }
             
                 <div class="form-group">
                   <label>Players</label>
-                  
-                  <ul class="nav nav-pills">
-                      <li>
-                        <div class="btn-group">
-                          <button class="btn  btn-warning btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
-                            Lu<br><span class="badge smallbadge">Evil</span>
-                          </button>
-                          <ul class="dropdown-menu">
-                              <li><a href="#">Good</a></li>
-                              <li><a href="#">Evil</a></li>
-                              <li><a href="#">Marlin</a></li>
-                              <li><a href="#">Assassin</a></li>
-                              <li><a href="#">- remove- </a></li>
-                          </ul>
-                        </div>
-                      </li>
-                      <li>
-                        <div class="btn-group">
-                          <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
-                            Heather<br><span class="badge smallbadge">Good</span>
-                          </button>
-                          <ul class="dropdown-menu">
-                              <li><a href="#">Good</a></li>
-                              <li><a href="#">Evil</a></li>
-                              <li><a href="#">Marlin</a></li>
-                              <li><a href="#">Assassin</a></li>
-                              <li><a href="#">- remove- </a></li>
-                          </ul>
-                        </div>
-                      </li>
-                      <li>
-                        <div class="btn-group">
-                          <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
-                            Kg<br>
-                          </button>
-                          <ul class="dropdown-menu">
-                              <li><a href="#">Good</a></li>
-                              <li><a href="#">Evil</a></li>
-                              <li><a href="#">Marlin</a></li>
-                              <li><a href="#">Assassin</a></li>
-                              <li><a href="#">- remove- </a></li>
-                          </ul>
-                        </div>
-                      </li>
-                      </ul>
-                      
-                      
+                  <ul class="nav nav-pills playersList">
+                  </ul>
                 </div>
                 
                 
@@ -258,23 +252,24 @@ body { padding-top: 60px; }
                     <input type="checkbox">  Good guys won?
                   </label>
                 </div>
-          
         </div>
+        <div class="alert submitStatusText">Five players game, where Marlin was assassinated after 4 missions.</div>
         <div class="modal-footer">
-        	<div class="alert alert-info">Five players game, where Marlin was assassinated after 4 missions.</div>
+        	
           <button type="button" class="btn btn-primary">Submit</button>
         </div>
       </div>
     </div>
   </div>
     
-                        <div class="btn-group" id="playerSlot">
-                          <button class="btn btn-sm dropdown-toggle playerButton" type="button" data-toggle="dropdown">
-                            <span class="playerName">Player</span><br><span class="badge smallbadge playerRole"><role>role<role></span>
-                          </button>
-                          <ul class="dropdown-menu playerDropDown">
-                          </ul>
-                        </div>
+    
+    <!-- playerSlot template -->
+    <div class="btn-group" id="playerSlot">
+    <button class="btn btn-sm dropdown-toggle playerButton" type="button" data-toggle="dropdown">
+    	<span class="playerName">Player</span><br><span class="badge smallbadge playerRole"><role>role<role></span>
+        </button>
+        <ul class="dropdown-menu playerDropDown"></ul>
+     </div>
     
     
     
