@@ -32,13 +32,21 @@ body { padding-top: 60px; }
 			new Player("", "Jack")
 		];
 		
+		var games = [
+			
+		];
+		
 	
 		var playerSlotTemplate;
+		var gameRowTemplate;
 		
 		function onLoad()
 		{
-			playerSlotTemplate = $("#playerSlot");
-			playerSlotTemplate.hide();
+			playerSlotTemplate = $("#playerSlotTemplate");
+			playerSlotTemplate.remove();
+			
+			gameRowTemplate = $("gameRowTemplate");
+			gameRowTemplate.remove();
 		}
 		
 		function createPlayerSlot(player, game)
@@ -236,7 +244,20 @@ body { padding-top: 60px; }
   <div class="panel-heading">
     <h3 class="panel-title-primary">Games</h3>
   </div>
-  todo...
+  <table class="table table-hover table-striped table-bordered table-condensed">
+  <tr>
+    <th>&nbsp;</th>
+    <th>Players</th>
+    <th>Missions</th>
+    <th>Winner</th>
+  </tr>
+  <tr class="gameRowTemplate">
+    <td class="gameDate">&nbsp;</td>
+    <td class="gamePlayers">&nbsp;</td>
+    <td class="gameMissions">&nbsp;</td>
+    <td class="gameWinner">&nbsp;</td>
+  </tr>
+</table>
 </div>
     </div>
     
@@ -302,7 +323,7 @@ body { padding-top: 60px; }
     
     
     <!-- playerSlot template -->
-    <div class="btn-group" id="playerSlot">
+    <div class="btn-group" id="playerSlotTemplate">
     <button class="btn btn-sm dropdown-toggle playerButton" type="button" data-toggle="dropdown">
     	<span class="playerName">Player</span><br><span class="badge smallbadge playerRole"><role>role<role></span>
         </button>
