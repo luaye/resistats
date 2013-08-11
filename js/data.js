@@ -153,6 +153,19 @@
 				}
 			}
 			
+			this.countMission = function(success)
+			{
+				var count = 0;
+				for(var X in self.missions)
+				{
+					if(self.missions[X].success == success)
+					{
+						count++;
+					}
+				}
+				return count;
+			}
+			
 			var addedAll;
 			this.addToNextEmptyMission = function(wasSuccess)
 			{
@@ -190,6 +203,11 @@
 				{
 					ok = false;
 					message = "Not enough bad players";
+				}
+				else if(self.countMission(true) < 3 && self.countMission(false) < 3)
+				{
+					ok = false;
+					message = "Not enough missions.";
 				}
 				
 				if(ok)

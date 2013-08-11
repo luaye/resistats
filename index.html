@@ -191,12 +191,14 @@ body { padding-top: 60px; }
 			}
 			for(var i = 0; i < MaxNumberOfMissions; i++)
 			{
-				successRow.find(".submitSuccess" + i).change({index:i}, function(e)
+				successRow.find(".submitSuccess" + i).bind("click", {index:i}, function(e)
 				{
+					e.stopPropagation();
 					game.toggleMission(e.data.index, true);
 				});
-				failRow.find(".submitFail" + i).change({index:i}, function(e)
+				failRow.find(".submitFail" + i).bind("click", {index:i}, function(e)
 				{
+					e.stopPropagation();
 					game.toggleMission(e.data.index, false);
 				});
 				
