@@ -12,6 +12,9 @@
 		
 		var GoodSideRoles = [PlayerRoles.good, PlayerRoles.merlin, PlayerRoles.percival];
 		var BadSideRoles = [PlayerRoles.bad, PlayerRoles.assassin, PlayerRoles.mordrid];
+		var SpecialCharacterRoles = [PlayerRoles.merlin, PlayerRoles.percival, PlayerRoles.assassin, PlayerRoles.mordrid];
+		
+		var MaxNumberOfMissions = 5;
 		
 		var Player = function(id_, name_)
 		{
@@ -25,14 +28,24 @@
 			this.role = role_;
 		}
 		
+		var GameMission = function(missioni, wasSuccess, players_)
+		{
+			this.index = missioni;
+			this.success = wasSuccess;
+			this.players = players_;
+		}
+		
 		var Game = function()
 		{
 			this.ROLE_CHANGED = "ROLE_CHANGED";
+			this.MISSION_CHANGED = "MISSION_CHANGED";
 			this.CHANGED = "CHANGED";
 			
 			
 			this.players = [];
+			this.missions = [];
 			this.editable = true;
+			
 			this.events = $({});
 			
 			var self = this;
@@ -87,6 +100,47 @@
 				return count;
 			}
 			
+			this.getMission = function(index)
+			{
+				for(var X in self.missions)
+				{
+					if(self.missions[X].index == index)
+					{
+						return self.missions[X];
+					}
+				}
+				return null;
+			}
+			
+			this.setMission = function(index, wasSuccess, players)
+			{
+				var mission = self.getMission(index);
+				if(mission)
+				{
+					mission.success = wasSuccess;
+					mission.players = players;
+				}
+				else
+				{
+					self.missions.push(new GameMission(index, wasSuccess, players));
+				}
+				this.events.trigger(self.MISSION_CHANGED, [index, wasSuccess, players]);
+				this.events.trigger(self.CHANGED, self.MISSION_CHANGED);
+			}
+			
+			this.addToNextEmptyMission = function(wasSuccess)
+			{
+				for(var i = 0; i < MaxNumberOfMissions; i++)
+				{
+					var mission = self.getMission(i);
+					if(mission == null)
+					{
+						self.setMission(i, wasSuccess);
+						break;
+					}
+				}
+			}
+			
 			this.getStatus = function()
 			{
 				var ok = true;
@@ -106,11 +160,21 @@
 					ok = false;
 					message = "Not enough bad players";
 				}
-				else if(self.countRoles([]) < 2)
+				
+				if(ok)
 				{
-					ok = false;
-					message = "Not enough bad players";
+					for(var X in SpecialCharacterRoles)
+					{
+						if(self.countRoles(SpecialCharacterRoles[X]) > 1)
+						{
+							ok = false;
+							message = "Have duplicate special character roles.";
+							break;
+						}
+					}
 				}
+				
+				
 				return {ok:ok, message:message};
 			}
 		}

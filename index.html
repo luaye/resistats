@@ -138,6 +138,8 @@ body { padding-top: 60px; }
 			var game = new Game();
 			
 			var modal = $("#submitModal");
+			var successRow = modal.find(".submitSuccessRow");
+			var failRow = modal.find(".submitFailRow");
 			var playersList = modal.find(".playersList");
 			playersList.html("");
 			for(var X in players)
@@ -147,6 +149,17 @@ body { padding-top: 60px; }
 				li.append(slot);
 				playersList.append(li);
 			}
+			
+			successRow.bind("click", function()
+			{
+				game.addToNextEmptyMission(true);
+			});
+			
+			failRow.bind("click", function()
+			{
+				game.addToNextEmptyMission(false);
+			});
+			
 			var updateStatus = function()
 			{
 				var status = game.getStatus();
@@ -157,12 +170,37 @@ body { padding-top: 60px; }
 				else box.addClass("alert-danger");
 				box.text(status.message);
 			}
+			var updateMissions = function()
+			{
+				for(var i = 0; i < MaxNumberOfMissions; i++)
+				{
+					var mission = game.getMission(i);
+					var elem = successRow.find(".submitSuccess" + i);
+					elem.prop('checked', mission != null && mission.success);
+					elem = failRow.find(".submitFail" + i);
+					elem.prop('checked', mission != null && !mission.success);
+				}
+			}
+			for(var i = 0; i < MaxNumberOfMissions; i++)
+			{
+				successRow.find(".submitSuccess" + i).change({index:i}, function(e)
+				{
+					game.setMission(e.data.index, true);
+				});
+				failRow.find(".submitFail" + i).change({index:i}, function(e)
+				{
+					game.setMission(e.data.index, false);
+				});
+				
+			}
 			
 			game.events.bind(game.CHANGED, function (e)
 			{
 				updateStatus();
+				updateMissions();
 			});
 			updateStatus();
+			updateMissions();
 			
 			modal.modal('show');
 		}
@@ -231,25 +269,25 @@ body { padding-top: 60px; }
                         <th>Forth</th>
                         <th>Fifth</th>
                       </tr>
-                      <tr class="success">
+                      <tr class="success submitSuccessRow">
                         <td>Success</td>
-                        <td><input type="checkbox"></td>
-                        <td><input type="checkbox"></td>
-                        <td><input type="checkbox"></td>
-                        <td><input type="checkbox"></td>
-                        <td><input type="checkbox"></td>
+                        <td><input type="checkbox" class="submitSuccess0"></td>
+                        <td><input type="checkbox" class="submitSuccess1"></td>
+                        <td><input type="checkbox" class="submitSuccess2"></td>
+                        <td><input type="checkbox" class="submitSuccess3"></td>
+                        <td><input type="checkbox" class="submitSuccess4"></td>
                       </tr>
-                      <tr class="danger">
+                      <tr class="danger submitFailRow">
                         <td>Fail</td>
-                        <td><input type="checkbox"></td>
-                        <td><input type="checkbox"></td>
-                        <td><input type="checkbox"></td>
-                        <td><input type="checkbox"></td>
-                        <td><input type="checkbox"></td>
+                        <td><input type="checkbox" class="submitFail0"></td>
+                        <td><input type="checkbox" class="submitFail1"></td>
+                        <td><input type="checkbox" class="submitFail2"></td>
+                        <td><input type="checkbox" class="submitFail3"></td>
+                        <td><input type="checkbox" class="submitFail4"></td>
                       </tr>
                     </table>
                     <label>
-                    <input type="checkbox">  Good guys won?
+                    <input type="checkbox"> Good guys won?
                   </label>
                 </div>
         </div>
