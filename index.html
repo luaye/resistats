@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Resistats</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    
+    <style>
+body { padding-top: 60px; }
+@media screen and (max-width: 768px) {
+    body { padding-top: 200px; }
+}
+.smallbadge { font-size: 10px; padding: 2px 5px; }
+	</style>
+    
+    
+    
+    
+    <script type="application/javascript">
+	
+		var PlayerRoles = {
+			none:"none",
+			good:"good",
+			bad:"bad",
+			marlin:"marlin",
+			assassin:"assassin",
+			percival:"percival",
+			mordrid:"mordrid"
+		}
+		
+		var players = [
+			{id:"1", name:"Lu Aye Oo"},
+			{id:"2", name:"Heather"},
+			{id:"3", name:"Kg"},
+			{id:"4", name:"Min Ko"},
+			{id:"5", name:"Nanda"},
+			{id:"6", name:"Vicki"},
+			{id:"7", name:"Jack"}
+		];
+		
+	
+		var playerSlotTemplate;
+		
+		function onLoad()
+		{
+			$("#submitModal").modal('show');
+			playerSlotTemplate = $("#playerSlot");
+			playerSlotTemplate.hide();
+			
+			for(var X in players)
+			{
+				var copy = createPlayerSlot(players[X], PlayerRoles.assassin, function()
+				{
+					
+				});	
+				copy.appendTo( "body" );
+			}
+		}
+		
+		function createPlayerSlot(player, role, editCallback)
+		{
+			var copy = playerSlotTemplate.clone();
+			copy.show();
+			if(player) setupPlayerSlot(copy, player, role, editCallback);
+			return copy;
+		}
+		
+		function setupPlayerSlot(slot, player, role, editCallback)
+		{
+			slot.find(".playerName").text(player.name);
+			var roleSpan = slot.find(".playerRole");
+			var btnclass = "btn-default";
+			var btn = slot.find(".playerButton");
+			if(role && role != PlayerRoles.none)
+			{
+				switch(role)
+				{
+					case PlayerRoles.good:
+						btnclass = "btn-primary";
+					break;
+					case PlayerRoles.bad:
+						btnclass = "btn-warning";
+					break;
+					case PlayerRoles.marlin:
+						btnclass = "btn-success";
+					break;
+					case PlayerRoles.percival:
+						btnclass = "btn-info";
+					break;
+					case PlayerRoles.assassin:
+						btnclass = "btn-warning";
+					break;
+					case PlayerRoles.mordrid:
+						btnclass = "btn-danger";
+					break;
+				}
+				btn.addClass(btnclass);
+				roleSpan.text(role);
+				roleSpan.show();
+			}
+			else roleSpan.hide();
+			
+			var dropdown = slot.find(".playerDropDown");
+			if(editCallback != null)
+			{
+				dropdown.html("");
+				for(var prop in PlayerRoles)
+				{
+					var role = PlayerRoles[prop];
+					var li = $( '<li><a href="#">'+role+'</a></li>' );
+					li.bind("click", { player: player, role: role }, function(e)
+					{
+						var d = e.data;
+						btn.removeClass(btnclass);
+						setupPlayerSlot(slot, d.player, d.role, editCallback);
+						editCallback(e.player, e.role);
+					});
+					dropdown.append(li);
+				}
+				
+			}
+			else
+			{
+				slot.find(".playerDropDown").remove();
+			}
+		}
+		
+    </script>
+    
+    
+  </head>
+  <body onLoad="onLoad()">
+<div class="navbar navbar-inverse navbar-fixed-top">
+
+<div class="container">
+    <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand">Resistats</a>
+    <div class="nav-collapse collapse bs-navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li class="active">
+          <a href="#">Games</a>
+        </li>
+      </ul>
+    <a data-toggle="modal" href="#submitModal" class="btn btn-primary navbar-btn pull-right"href="#submitModal" >Submit</a>
+    </div>
+  </div>
+</div>
+</div>
+    <div class="container">
+    
+<div class="panel">
+  <div class="panel-heading">
+    <h3 class="panel-title-primary">Games</h3>
+  </div>
+  todo...
+</div>
+    </div>
+    
+    
+  <div class="modal fade" id="submitModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">Submit game</h4>
+        </div>
+        <div class="modal-body">	
+            
+                <div class="form-group">
+                  <label>Players</label>
+                  
+                  <ul class="nav nav-pills">
+                      <li>
+                        <div class="btn-group">
+                          <button class="btn  btn-warning btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
+                            Lu<br><span class="badge smallbadge">Evil</span>
+                          </button>
+                          <ul class="dropdown-menu">
+                              <li><a href="#">Good</a></li>
+                              <li><a href="#">Evil</a></li>
+                              <li><a href="#">Marlin</a></li>
+                              <li><a href="#">Assassin</a></li>
+                              <li><a href="#">- remove- </a></li>
+                          </ul>
+                        </div>
+                      </li>
+                      <li>
+                        <div class="btn-group">
+                          <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
+                            Heather<br><span class="badge smallbadge">Good</span>
+                          </button>
+                          <ul class="dropdown-menu">
+                              <li><a href="#">Good</a></li>
+                              <li><a href="#">Evil</a></li>
+                              <li><a href="#">Marlin</a></li>
+                              <li><a href="#">Assassin</a></li>
+                              <li><a href="#">- remove- </a></li>
+                          </ul>
+                        </div>
+                      </li>
+                      <li>
+                        <div class="btn-group">
+                          <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
+                            Kg<br>
+                          </button>
+                          <ul class="dropdown-menu">
+                              <li><a href="#">Good</a></li>
+                              <li><a href="#">Evil</a></li>
+                              <li><a href="#">Marlin</a></li>
+                              <li><a href="#">Assassin</a></li>
+                              <li><a href="#">- remove- </a></li>
+                          </ul>
+                        </div>
+                      </li>
+                      </ul>
+                      
+                      
+                </div>
+                
+                
+                
+                <div class="form-group">
+                  <label>Missions</label>
+                  <table class="table table-hover table-condensed">
+                      <tr>
+                        <th>&nbsp;</th>
+                        <th>First</th>
+                        <th>Second</th>
+                        <th>Third</th>
+                        <th>Forth</th>
+                        <th>Fifth</th>
+                      </tr>
+                      <tr class="success">
+                        <td>Success</td>
+                        <td><input type="checkbox"></td>
+                        <td><input type="checkbox"></td>
+                        <td><input type="checkbox"></td>
+                        <td><input type="checkbox"></td>
+                        <td><input type="checkbox"></td>
+                      </tr>
+                      <tr class="danger">
+                        <td>Fail</td>
+                        <td><input type="checkbox"></td>
+                        <td><input type="checkbox"></td>
+                        <td><input type="checkbox"></td>
+                        <td><input type="checkbox"></td>
+                        <td><input type="checkbox"></td>
+                      </tr>
+                    </table>
+                    <label>
+                    <input type="checkbox">  Good guys won?
+                  </label>
+                </div>
+          
+        </div>
+        <div class="modal-footer">
+        	<div class="alert alert-info">Five players game, where Marlin was assassinated after 4 missions.</div>
+          <button type="button" class="btn btn-primary">Submit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+                        <div class="btn-group" id="playerSlot">
+                          <button class="btn btn-sm dropdown-toggle playerButton" type="button" data-toggle="dropdown">
+                            <span class="playerName">Player</span><br><span class="badge smallbadge playerRole"><role>role<role></span>
+                          </button>
+                          <ul class="dropdown-menu playerDropDown">
+                          </ul>
+                        </div>
+    
+    
+    
+  </body>
+</html>
