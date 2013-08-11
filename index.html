@@ -8,17 +8,12 @@
     <script src="http://code.jquery.com/jquery.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/data.js"></script>
+    <script src="js/view.js"></script>
     
     <style>
 body { padding-top: 60px; }
-@media screen and (max-width: 768px) {
-    body { padding-top: 200px; }
-}
 .smallbadge { font-size: 10px; padding: 2px 5px; }
 	</style>
-    
-    
-    
     
     <script type="application/javascript">
 		
@@ -33,186 +28,26 @@ body { padding-top: 60px; }
 		];
 		
 		var games = [
-			
+			new Game(
+				[new GamePlayer(players[0], PlayerRoles.good), new GamePlayer(players[1], PlayerRoles.evil), new GamePlayer(players[2], PlayerRoles.mordrid), new GamePlayer(players[3], PlayerRoles.merlin), new GamePlayer(players[4], PlayerRoles.percival), new GamePlayer(players[5], PlayerRoles.evil), new GamePlayer(players[6], PlayerRoles.assassin)], 
+				[new GameMission(0, true), new GameMission(1, true), new GameMission(2, true)]
+			),
+			new Game(
+				[new GamePlayer(players[0], PlayerRoles.good), new GamePlayer(players[1], PlayerRoles.evil), new GamePlayer(players[2], PlayerRoles.mordrid), new GamePlayer(players[3], PlayerRoles.merlin), new GamePlayer(players[4], PlayerRoles.percival)], 
+				[new GameMission(0, false), new GameMission(1, false), new GameMission(2, false)]
+			),
+			new Game(
+				[new GamePlayer(players[2], PlayerRoles.mordrid), new GamePlayer(players[3], PlayerRoles.merlin), new GamePlayer(players[4], PlayerRoles.percival), new GamePlayer(players[5], PlayerRoles.evil), new GamePlayer(players[6], PlayerRoles.assassin)], 
+				[new GameMission(0, true), new GameMission(1, true), new GameMission(2, false), new GameMission(3, false), new GameMission(4, false)]
+			)
 		];
 		
-	
-		var playerSlotTemplate;
-		var gameRowTemplate;
-		
+
 		function onLoad()
 		{
-			playerSlotTemplate = $("#playerSlotTemplate");
-			playerSlotTemplate.remove();
+			initView();
 			
-			gameRowTemplate = $("gameRowTemplate");
-			gameRowTemplate.remove();
-		}
-		
-		function createPlayerSlot(player, game)
-		{
-			var copy = playerSlotTemplate.clone();
-			copy.show();
-			if(player) setupPlayerSlot(copy, player, game, true);
-			return copy;
-		}
-		
-		function setupPlayerSlot(slot, player, game, autoupdate)
-		{
-			slot.find(".playerName").text(player.name);
-			
-			var role = game ? game.getPlayerRole(player) : PlayerRoles.none;
-			updatePlayerSlotRole(slot, role);
-			
-			var dropdown = slot.find(".playerDropDown");
-			if(game && game.editable)
-			{
-				dropdown.html("");
-				for(var prop in PlayerRoles)
-				{
-					var role = PlayerRoles[prop];
-					var li = $( '<li><a href="#">'+role+'</a></li>' );
-					li.bind("click", { player: player, role: role }, function(e)
-					{
-						game.setPlayerRole(player, e.data.role);
-					});
-					dropdown.append(li);
-				}
-				
-			}
-			else
-			{
-				slot.find(".playerDropDown").remove();
-			}
-			
-			if(autoupdate && game)
-			{
-				game.events.on(game.ROLE_CHANGED, function(e, p, r)
-				{
-					if(player == p)
-					{
-						updatePlayerSlotRole(slot, r);
-					}
-				});
-			}
-		}
-		
-		function updatePlayerSlotRole(slot, role)
-		{
-			var btn = slot.find(".playerButton");
-			
-			btn.removeClass("btn-primary");
-			btn.removeClass("btn-warning");
-			btn.removeClass("btn-success");
-			btn.removeClass("btn-info");
-			btn.removeClass("btn-danger");
-			
-			var btnclass = "btn-default";
-			var roleSpan = slot.find(".playerRole");
-			if(role && role != PlayerRoles.none)
-			{
-				switch(role)
-				{
-					case PlayerRoles.good:
-						btnclass = "btn-primary";
-					break;
-					case PlayerRoles.bad:
-						btnclass = "btn-warning";
-					break;
-					case PlayerRoles.merlin:
-						btnclass = "btn-success";
-					break;
-					case PlayerRoles.percival:
-						btnclass = "btn-info";
-					break;
-					case PlayerRoles.assassin:
-						btnclass = "btn-warning";
-					break;
-					case PlayerRoles.mordrid:
-						btnclass = "btn-danger";
-					break;
-				}
-				btn.addClass(btnclass);
-				roleSpan.text(role);
-				roleSpan.show();
-			}
-			else roleSpan.hide();	
-		}
-		
-		
-		
-		function showSubmitDialog()
-		{
-			var game = new Game();
-			
-			var modal = $("#submitModal");
-			var successRow = modal.find(".submitSuccessRow");
-			var failRow = modal.find(".submitFailRow");
-			var playersList = modal.find(".playersList");
-			playersList.html("");
-			for(var X in players)
-			{
-				var slot = createPlayerSlot(players[X], game);
-				var li = $("<li></li>");
-				li.append(slot);
-				playersList.append(li);
-			}
-			
-			successRow.bind("click", function()
-			{
-				game.addToNextEmptyMission(true);
-			});
-			
-			failRow.bind("click", function()
-			{
-				game.addToNextEmptyMission(false);
-			});
-			
-			var updateStatus = function()
-			{
-				var status = game.getStatus();
-				var box = modal.find(".submitStatusText");
-				box.removeClass("alert-danger");
-				box.removeClass("alert-info");
-				if(status.ok == true) box.addClass("alert-info");
-				else box.addClass("alert-danger");
-				box.text(status.message);
-			}
-			var updateMissions = function()
-			{
-				for(var i = 0; i < MaxNumberOfMissions; i++)
-				{
-					var mission = game.getMission(i);
-					var elem = successRow.find(".submitSuccess" + i);
-					elem.prop('checked', mission != null && mission.success);
-					elem = failRow.find(".submitFail" + i);
-					elem.prop('checked', mission != null && !mission.success);
-				}
-			}
-			for(var i = 0; i < MaxNumberOfMissions; i++)
-			{
-				successRow.find(".submitSuccess" + i).bind("click", {index:i}, function(e)
-				{
-					e.stopPropagation();
-					game.toggleMission(e.data.index, true);
-				});
-				failRow.find(".submitFail" + i).bind("click", {index:i}, function(e)
-				{
-					e.stopPropagation();
-					game.toggleMission(e.data.index, false);
-				});
-				
-			}
-			
-			game.events.bind(game.CHANGED, function (e)
-			{
-				updateStatus();
-				updateMissions();
-			});
-			updateStatus();
-			updateMissions();
-			
-			modal.modal('show');
+			setupGamesView(games);
 		}
 		
     </script>
@@ -246,14 +81,14 @@ body { padding-top: 60px; }
   <div class="panel-heading">
     <h3 class="panel-title-primary">Games</h3>
   </div>
-  <table class="table table-hover table-striped table-bordered table-condensed">
+  <table id="gameRows" class="table table-hover table-striped table-bordered table-condensed">
   <tr>
     <th>&nbsp;</th>
     <th>Players</th>
     <th>Missions</th>
     <th>Winner</th>
   </tr>
-  <tr class="gameRowTemplate">
+  <tr class="gameRow">
     <td class="gameDate">&nbsp;</td>
     <td class="gamePlayers">&nbsp;</td>
     <td class="gameMissions">&nbsp;</td>
@@ -264,6 +99,9 @@ body { padding-top: 60px; }
     </div>
     
     
+
+
+	<!-- Submit game dialog -->
   <div class="modal fade" id="submitModal">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -316,7 +154,6 @@ body { padding-top: 60px; }
         </div>
         <div class="alert submitStatusText">Five players game, where merlin was assassinated after 4 missions.</div>
         <div class="modal-footer">
-        	
           <button type="button" class="btn btn-primary">Submit</button>
         </div>
       </div>

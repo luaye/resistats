@@ -3,7 +3,7 @@
 		var PlayerRoles = {
 			none:"none",
 			good:"good",
-			bad:"bad",
+			evil:"evil",
 			merlin:"merlin",
 			assassin:"assassin",
 			percival:"percival",
@@ -11,7 +11,7 @@
 		}
 		
 		var GoodSideRoles = [PlayerRoles.good, PlayerRoles.merlin, PlayerRoles.percival];
-		var BadSideRoles = [PlayerRoles.bad, PlayerRoles.assassin, PlayerRoles.mordrid];
+		var EvilSideRoles = [PlayerRoles.evil, PlayerRoles.assassin, PlayerRoles.mordrid];
 		var SpecialCharacterRoles = [PlayerRoles.merlin, PlayerRoles.percival, PlayerRoles.assassin, PlayerRoles.mordrid];
 		
 		var MaxNumberOfMissions = 5;
@@ -35,16 +35,19 @@
 			this.players = players_;
 		}
 		
-		var Game = function()
+		var Game = function(players, missions)
 		{
 			this.ROLE_CHANGED = "ROLE_CHANGED";
 			this.MISSION_CHANGED = "MISSION_CHANGED";
 			this.CHANGED = "CHANGED";
 			
+			if(!players) players = [];
+			if(!missions) missions = [];
 			
-			this.players = [];
-			this.missions = [];
-			this.editable = true;
+			this.players = players;
+			this.missions = missions;
+			this.editable = false;
+			this.goodWon = false;
 			
 			this.events = $({});
 			
@@ -199,10 +202,10 @@
 					ok = false;
 					message = "Not enough good players";
 				}
-				else if(self.countRoles(BadSideRoles) < 2)
+				else if(self.countRoles(EvilSideRoles) < 2)
 				{
 					ok = false;
-					message = "Not enough bad players";
+					message = "Not enough evil players";
 				}
 				else if(self.countMission(true) < 3 && self.countMission(false) < 3)
 				{
