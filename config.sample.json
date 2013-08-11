@@ -1,0 +1,12 @@
+{
+	"port":80,
+	"couch": {
+		"host": "localhost",
+		"port": 5984,
+		"usersDB": "foosplayers",
+		"matchesDB": "foosmatches",
+		"matchesDBClone": "foosmatchesClone"
+		},
+	"useFacebookAuth":true,
+	"secretAuthKey": "972c6b99b84937c0a0d4df39499036a4"
+}

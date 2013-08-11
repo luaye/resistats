@@ -169,6 +169,12 @@
 				return count;
 			}
 			
+			this.setGoodWon = function(won)
+			{
+				this.goodWon = won;
+				this.events.trigger(self.CHANGED, self.MISSION_CHANGED);
+			}
+			
 			var addedAll;
 			this.addToNextEmptyMission = function(wasSuccess)
 			{

@@ -1,0 +1,11 @@
+{
+	"port":8080,
+	"couch": {
+		"host": "localhost",
+		"port": 5984,
+		"usersDB": "testfoosplayers",
+		"matchesDB": "resistancegames",
+		"matchesDBClone": "resistancegamesclone"
+		},
+	"useFacebookAuth":false
+}

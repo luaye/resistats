@@ -8,6 +8,7 @@
     <script src="http://code.jquery.com/jquery.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/data.js"></script>
+    <script src="js/comms.js"></script>
     <script src="js/view.js"></script>
     
     <style>
@@ -17,18 +18,10 @@ body { padding-top: 60px; }
     
     <script type="application/javascript">
 		
-		var players = [
-			new Player("", "Lu Aye Oo"),
-			new Player("", "Heather"),
-			new Player("", "Kg"),
-			new Player("", "Min Ko"),
-			new Player("", "Nanda"),
-			new Player("", "Vicki"),
-			new Player("", "Jack")
-		];
+		var players = [];
 		
 		var games = [
-			new Game(
+			/*new Game(
 				[new GamePlayer(players[0], PlayerRoles.good), new GamePlayer(players[1], PlayerRoles.evil), new GamePlayer(players[2], PlayerRoles.mordrid), new GamePlayer(players[3], PlayerRoles.merlin), new GamePlayer(players[4], PlayerRoles.percival), new GamePlayer(players[5], PlayerRoles.evil), new GamePlayer(players[6], PlayerRoles.assassin)], 
 				[new GameMission(0, true), new GameMission(1, true), new GameMission(2, true)]
 			),
@@ -39,16 +32,36 @@ body { padding-top: 60px; }
 			new Game(
 				[new GamePlayer(players[2], PlayerRoles.mordrid), new GamePlayer(players[3], PlayerRoles.merlin), new GamePlayer(players[4], PlayerRoles.percival), new GamePlayer(players[5], PlayerRoles.evil), new GamePlayer(players[6], PlayerRoles.assassin)], 
 				[new GameMission(0, true), new GameMission(1, true), new GameMission(2, false), new GameMission(3, false), new GameMission(4, false)]
-			)
+			)*/
 		];
 		
 
 		function onLoad()
 		{
-			initView();
+			loadPlayers(self.onPlayersLoaded);
+			$(".playersLoaded").hide();
 			
+			initView();
+		}
+		
+		function onPlayersLoaded(ps)
+		{
+			$(".playersLoaded").show();
+			players = ps;
+			reloadGames();
+		}
+		
+		function reloadGames()
+		{
+			loadGames(self.onGamesLoaded);
+		}
+		
+		function onGamesLoaded(gs)
+		{
+			games = gs;
 			setupGamesView(games);
 		}
+		
 		
     </script>
     
@@ -70,7 +83,7 @@ body { padding-top: 60px; }
           <a href="#">Games</a>
         </li>
       </ul>
-    <a class="btn btn-primary navbar-btn pull-right" href="javascript:showSubmitDialog();" >Submit</a>
+    <a class="btn btn-primary navbar-btn pull-right playersLoaded" href="javascript:showSubmitDialog();" >Submit</a>
     </div>
   </div>
 </div>
@@ -148,13 +161,13 @@ body { padding-top: 60px; }
                       </tr>
                     </table>
                     <label>
-                    <input type="checkbox"> Good guys won?
+                    <input type="checkbox" class="submitGoodWon"> Good guys won?
                   </label>
                 </div>
         </div>
         <div class="alert submitStatusText">Five players game, where merlin was assassinated after 4 missions.</div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary">Submit</button>
+          <button type="button" class="btn btn-primary submitButton">Submit</button>
         </div>
       </div>
     </div>

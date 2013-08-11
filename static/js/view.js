@@ -120,9 +120,10 @@
 			for(var X in players)
 			{
 				var slot = createPlayerSlot(players[X], game);
-				var li = $("<li></li>");
-				li.append(slot);
-				playersList.append(li);
+				//var li = $("<li></li>");
+				//li.append(slot);
+				playersList.append(slot);
+				playersList.append(" ");
 			}
 			
 			successRow.bind("click", function()
@@ -133,6 +134,12 @@
 			failRow.bind("click", function()
 			{
 				game.addToNextEmptyMission(false);
+			});
+			
+			var goodwonCheck = modal.find(".submitGoodWon");
+			goodwonCheck.bind("change", function()
+			{
+				game.setGoodWon(goodwonCheck.prop("checked"));
 			});
 			
 			var updateStatus = function()
@@ -168,7 +175,6 @@
 					e.stopPropagation();
 					game.toggleMission(e.data.index, false);
 				});
-				
 			}
 			
 			game.events.bind(game.CHANGED, function (e)
@@ -178,6 +184,24 @@
 			});
 			updateStatus();
 			updateMissions();
+			
+			var submitButton = modal.find(".submitButton");
+			submitButton.show();
+			submitButton.bind("click", function(e)
+			{
+				submitButton.hide();
+				submitGame(game, function(data)
+				{
+					if(data.status == "OK")
+					{
+						alert("submitted");
+						reloadGames();
+						modal.modal('hide');
+					}
+					else alert("failed");
+					submitButton.show();
+				});
+			});
 			
 			modal.modal('show');
 		}
@@ -209,6 +233,7 @@
 			}
 			
 			var missionsTxt = "";
+			game.missions.sort(function(a,b){return a.index-b.index});
 			for(var X in game.missions)
 			{
 				var mission = game.missions[X];
