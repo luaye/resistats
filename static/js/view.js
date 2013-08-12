@@ -4,7 +4,12 @@
 		var gameRowTemplate;
 		var gameRows;
 		
+		var dateNowCheckbox;
+		var datePicker; 
+		
 		var gameRowClass = ".gameRow";
+		
+		
 		
 		function initView()
 		{
@@ -15,6 +20,18 @@
 			gameRows = $("#gameRows");
 			gameRowTemplate = gameRows.find(gameRowClass);
 			gameRowTemplate.remove();
+			
+			dateNowCheckbox = $("#dateNow");
+			dateNowCheckbox.bind("change", function (e){
+				if(dateNowCheckbox.prop("checked")) datePicker.hide();
+				else 
+				{
+					setupDatePicker(datePicker);
+					datePicker.show();
+				}
+			});
+			datePicker = $("#datePicker");
+			datePicker.hide();
 		}
 		
 		function createPlayerSlot(player, game)
@@ -187,10 +204,24 @@
 			updateStatus();
 			updateMissions();
 			
+			
+			dateNowCheckbox.prop("checked", true);
+			datePicker.hide();
+			
+			
 			var submitButton = modal.find(".submitButton");
 			submitButton.show();
 			submitButton.bind("click", function(e)
 			{
+				if(!dateNowCheckbox.prop("checked"))
+				{
+					game.date = getDatePickerDate(datePicker);
+				}
+				else
+				{
+					game.date = new Date();
+				}
+	
 				submitButton.hide();
 				submitGame(game, function(data)
 				{
@@ -226,6 +257,14 @@
 		{
 			var row = gameRowTemplate.clone();
 			
+			var date = game.date;
+			var dateele = row.find(".gameDate");
+			if(date)
+			{
+				dateele.html(date.getDate() + ", "+ (date.getMonth()+1) + ", " + date.getFullYear() + "<br/>" + doubleDigit(date.getHours()) + ":" + doubleDigit(date.getMinutes()));
+			}
+			else dateele.text("");
+			
 			var playersHolder = row.find(".gamePlayers");
 			
 			for(var X in game.players)
@@ -252,3 +291,54 @@
 			gameRows.append(row);
 			return row;
 		}
+		
+		
+		
+		
+
+function setupDatePicker(picker)
+{
+	var now = new Date();
+	var min = picker.find('.date-min');
+	var hour = picker.find('.date-hour');
+	var day = picker.find('.date-day');
+	var month = picker.find('.date-month');
+	var year = picker.find('.date-year');
+	addDateRange(min, 0, 59, Math.floor(now.getMinutes()/10)*10, 10);
+	addDateRange(hour, 0, 23, now.getHours());
+	addDateRange(day, 1, 31, now.getDate());
+	addDateRange(month, 1, 12, now.getMonth() + 1);
+	var yearnow = now.getFullYear();
+	addDateRange(year, yearnow - 1, yearnow, yearnow);
+}
+
+function addDateRange(obj, min, max, current, increment)
+{
+	obj.empty();
+	if(!increment || increment <= 0) increment = 1;
+	for(var i = min; i <= max; i += increment)
+	{
+		var option = $("<option></option>").attr("value",i).text(i);
+		if(i == current) option.attr('selected', 'selected');
+		obj.append(option);
+	}
+}
+
+function getDatePickerDate(picker)
+{
+	var min = picker.find('.date-min').val();
+	var hour = picker.find('.date-hour').val();
+	var day = picker.find('.date-day').val();
+	var month = Number(picker.find('.date-month').val()) - 1;
+	var year = picker.find('.date-year').val();
+	return new Date(year, month, day, hour, min);
+}
+
+function doubleDigit(number)
+{
+	if(number < 10)
+	{
+		return "0"+number;
+	}
+	return ""+number;
+}

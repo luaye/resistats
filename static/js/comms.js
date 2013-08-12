@@ -18,6 +18,7 @@ function loadGames(callback)
 		{
 			games.push(transferObjToGame(data[X]));
 		}
+		//games = games.sort(function (a, b) {return b.date.getTime() - a.date.getTime();});
 		games.reverse();
 		callback(games);
 	});
@@ -54,6 +55,7 @@ function gameToTransferObj(game)
 		data.missions.push({index:m.index, success:m.success});
 	}
 	data.goodWon = game.goodWon;
+	if(game.date) data.date = game.date.getTime();
 	return data;
 }
 
@@ -76,6 +78,7 @@ function transferObjToGame(data)
 		game.missions.push(new GameMission(m.index, m.success));
 	}
 	game.goodWon = data.goodWon;
+	game.date = (data.date && !isNaN(data.date)) ? new Date(data.date) : null;
 	return game;
 }
 

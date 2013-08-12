@@ -50,6 +50,7 @@
 			this.missions = missions;
 			this.editable = false;
 			this.goodWon = false;
+			this.date = null;
 			
 			this.events = $({});
 			
