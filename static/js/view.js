@@ -281,9 +281,15 @@
 			
 			var playersHolder = row.find(".gamePlayers");
 			
-			for(var X in game.players)
+			
+			var pls = game.players.concat();
+			pls = pls.sort(function (a, b){
+				return getRoleIndex(a.role) - getRoleIndex(b.role);
+			});
+			
+			for(var X in pls)
 			{
-				var slot = createPlayerSlot(game.players[X].player, game);
+				var slot = createPlayerSlot(pls[X].player, game);
 				playersHolder.append(slot);
 			}
 			

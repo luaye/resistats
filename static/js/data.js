@@ -12,9 +12,16 @@
 			oberon:"oberon"
 		}
 		
-		var GoodSideRoles = [PlayerRoles.good, PlayerRoles.merlin, PlayerRoles.percival];
+		var GoodSideRoles = [PlayerRoles.good, PlayerRoles.percival, PlayerRoles.merlin];
 		var EvilSideRoles = [PlayerRoles.evil, PlayerRoles.assassin, PlayerRoles.mordred, PlayerRoles.morgana, PlayerRoles.oberon];
 		var SpecialCharacterRoles = [PlayerRoles.merlin, PlayerRoles.percival, PlayerRoles.assassin, PlayerRoles.mordred, PlayerRoles.oberon, PlayerRoles.morgana];
+		
+		function getRoleIndex(role)
+		{
+			var i = - GoodSideRoles.indexOf(role);
+			if(i > 0) i = 1 + EvilSideRoles.indexOf(role);
+			return i;
+		}
 		
 		var MaxNumberOfMissions = 5;
 		
