@@ -29,7 +29,7 @@ function submitGame(game, callback)
 	if(status.ok == false)
 	{
 		alert(status.message);
-		//return;
+		return;
 	}
 	var data = gameToTransferObj(game);
 	callAPI({request:"addMatch", body:JSON.stringify(data)}, callback);

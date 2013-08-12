@@ -97,7 +97,7 @@
 					case PlayerRoles.morgana:
 						btnclass = "btn-warning";
 					break;
-					case PlayerRoles.mordrid:
+					case PlayerRoles.mordred:
 						btnclass = "btn-danger";
 					break;
 				}

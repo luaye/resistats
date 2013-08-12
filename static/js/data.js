@@ -7,14 +7,14 @@
 			merlin:"merlin",
 			assassin:"assassin",
 			percival:"percival",
-			mordrid:"mordrid",
+			mordred:"mordred",
 			morgana:"morgana",
 			oberon:"oberon"
 		}
 		
 		var GoodSideRoles = [PlayerRoles.good, PlayerRoles.merlin, PlayerRoles.percival];
-		var EvilSideRoles = [PlayerRoles.evil, PlayerRoles.assassin, PlayerRoles.mordrid, PlayerRoles.oberon, PlayerRoles.morgana];
-		var SpecialCharacterRoles = [PlayerRoles.merlin, PlayerRoles.percival, PlayerRoles.assassin, PlayerRoles.mordrid, PlayerRoles.oberon, PlayerRoles.morgana];
+		var EvilSideRoles = [PlayerRoles.evil, PlayerRoles.assassin, PlayerRoles.mordred, PlayerRoles.oberon, PlayerRoles.morgana];
+		var SpecialCharacterRoles = [PlayerRoles.merlin, PlayerRoles.percival, PlayerRoles.assassin, PlayerRoles.mordred, PlayerRoles.oberon, PlayerRoles.morgana];
 		
 		var MaxNumberOfMissions = 5;
 		
