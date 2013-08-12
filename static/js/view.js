@@ -125,6 +125,20 @@
 			else roleSpan.hide();	
 		}
 		
+		function updateSubmitPlayerList(modal, game, showAll)
+		{
+			var playersList = modal.find(".playersList");
+			playersList.html("");
+			for(var X in players)
+			{
+				if(showAll || !players[X].inactive)
+				{
+					var slot = createPlayerSlot(players[X], game);
+					playersList.append(slot);
+					playersList.append(" ");
+				}
+			}
+		}
 		
 		
 		function showSubmitDialog()
@@ -132,18 +146,18 @@
 			var game = new Game();
 			game.editable = true;
 			var modal = $("#submitModal");
+			updateSubmitPlayerList(modal, game);
+			
+			var showallbtn = modal.find(".showAllPlayersButton");
+			showallbtn.show();
+			showallbtn.bind("click", function(){
+				showallbtn.hide();
+				updateSubmitPlayerList(modal, game, true);
+			});
+			
+			
 			var successRow = modal.find(".submitSuccessRow");
 			var failRow = modal.find(".submitFailRow");
-			var playersList = modal.find(".playersList");
-			playersList.html("");
-			for(var X in players)
-			{
-				var slot = createPlayerSlot(players[X], game);
-				//var li = $("<li></li>");
-				//li.append(slot);
-				playersList.append(slot);
-				playersList.append(" ");
-			}
 			
 			successRow.bind("click", function()
 			{

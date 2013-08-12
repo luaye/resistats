@@ -113,7 +113,9 @@ function convertToDomainPlayers(data)
 	for(var X in data)
 	{
 		var p = data[X];
-		result.push(new Player(p.id, p.name));
+		var player = new Player(p.id, p.name);
+		if(p.inactive) player.inactive = true;
+		result.push(player);
 	}
 	return result;
 }

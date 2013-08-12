@@ -13,7 +13,7 @@
 		}
 		
 		var GoodSideRoles = [PlayerRoles.good, PlayerRoles.merlin, PlayerRoles.percival];
-		var EvilSideRoles = [PlayerRoles.evil, PlayerRoles.assassin, PlayerRoles.mordred, PlayerRoles.oberon, PlayerRoles.morgana];
+		var EvilSideRoles = [PlayerRoles.evil, PlayerRoles.assassin, PlayerRoles.mordred, PlayerRoles.morgana, PlayerRoles.oberon];
 		var SpecialCharacterRoles = [PlayerRoles.merlin, PlayerRoles.percival, PlayerRoles.assassin, PlayerRoles.mordred, PlayerRoles.oberon, PlayerRoles.morgana];
 		
 		var MaxNumberOfMissions = 5;
@@ -22,6 +22,7 @@
 		{
 			this.id = id_;
 			this.name = name_;
+			this.inactive = false;
 		}
 		
 		var GamePlayer = function(player_, role_)
